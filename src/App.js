@@ -4,20 +4,6 @@ import * as BooksAPI from './BooksAPI';
 import './App.css';
 
 class BooksApp extends React.Component {
-  bookcase = [
-    {
-      title: 'Currently Reading',
-      type: 'currentlyReading'
-    },
-    {
-      title: 'Want to Read',
-      type: 'wantToRead'
-    },
-    {
-      title: 'Read',
-      type: 'read'
-    }
-  ]
 
   state = {
     books: [],
@@ -28,14 +14,57 @@ class BooksApp extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
     showSearchPage: false
-  }
+  };
 
   componentDidMount() {
-    BooksAPI.getAll()
-      .then(books => this.setState({ books }));
+    this.getBooks();
   }
 
+  /**
+   * Updates API database and class state books property
+   * @param book - Book object that's being updated
+   * @param shelf - updated value of shelf property
+   */
+  changeShelf = (book, shelf) => {
+    BooksAPI.update(book, shelf)
+      .then(() => {
+        this.setState({
+          books: this.state.books
+            .filter(b => b.id !== book.id) // Remove outdated book position from books
+            .concat([Object.assign(book, { shelf })]) // Add updated book position to books
+        })
+      })
+      .catch(error => Error(error));
+  };
+
+  /**
+   * Sets array of book objects fetched from external API
+   * as books property in class state.
+   */
+  getBooks = () => {
+    BooksAPI.getAll()
+      .then(books => {
+        this.setState({ books });
+      })
+      .catch(error => Error(error));
+  };
+
   render() {
+    const bookcase = [
+      {
+        title: 'Currently Reading',
+        type: 'currentlyReading'
+      },
+      {
+        title: 'Want to Read',
+        type: 'wantToRead'
+      },
+      {
+        title: 'Read',
+        type: 'read'
+      }
+    ];
+
     return (
       <div className="app">
         {this.state.showSearchPage ? (
@@ -56,7 +85,7 @@ class BooksApp extends React.Component {
               </div>
             </div>
             <div className="search-books-results">
-              <ol className="books-grid"></ol>
+              <ol className="books-grid"/>
             </div>
           </div>
         ) : (
@@ -65,11 +94,12 @@ class BooksApp extends React.Component {
               <h1>MyReads</h1>
             </div>
             <div className="list-books-content">
-              {this.bookcase.map(shelf => (
+              {bookcase.map(shelf => (
                 <Bookshelf
                   key={shelf.title}
                   title={shelf.title}
                   books={this.state.books.filter(book => book.shelf === shelf.type)}
+                  changeShelf={this.changeShelf}
                 />
               ))}
             </div>
@@ -83,4 +113,4 @@ class BooksApp extends React.Component {
   }
 }
 
-export default BooksApp
+export default BooksApp;

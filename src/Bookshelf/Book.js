@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './Book.css';
 
 class Book extends Component {
   options = [
@@ -8,15 +7,18 @@ class Book extends Component {
     { value: 'wantToRead', label: 'Want to Read' },
     { value: 'read', label: 'Read' },
     { value: 'none', label: 'None' }
-  ]
+  ];
 
   state = {
-    selectedOptionValue: this.props.book.shelf,
-  }
+    selectedOptionValue: this.props.book.shelf
+  };
 
   handleChange = (event) => {
-    this.setState({ selectedOptionValue: event.target.value })
-  }
+    const selectedOptionValue = event.target.value;
+
+    this.setState({ selectedOptionValue });
+    this.props.changeShelf(this.props.book, selectedOptionValue);
+  };
 
   render() {
     const book = this.props.book;
@@ -24,7 +26,7 @@ class Book extends Component {
     return (
       <div className="book">
         <div className="book-top">
-          <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+          <div className="book-cover" style={{width: 135, height: 200, backgroundImage: `url(${book.imageLinks.thumbnail})`}}/>
           <div className="book-shelf-changer">
             <select value={this.state.selectedOptionValue} onChange={this.handleChange}>
               {this.options.map(option => (
