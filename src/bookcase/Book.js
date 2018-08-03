@@ -10,7 +10,7 @@ class Book extends Component {
   ];
 
   state = {
-    selectedOptionValue: this.props.book.shelf
+    selectedOptionValue: this.props.book.shelf ? this.props.book.shelf : 'none'
   };
 
   handleChange = (event) => {
@@ -22,12 +22,13 @@ class Book extends Component {
 
   render() {
     const book = this.props.book;
+    const thumbnail = (book.imageLinks ? (book.imageLinks.thumbnail ? book.imageLinks.thumbnail : '') : '');
 
     return (
       <div className="book">
         <div className="book-top">
           <div className="book-cover"
-               style={{width: 135, height: 200, backgroundImage: `url(${book.imageLinks.thumbnail})`}}/>
+               style={{width: 135, height: 200,backgroundImage: `url(${thumbnail})`}}/>
 
           <div className="book-shelf-changer">
             <select value={this.state.selectedOptionValue} onChange={this.handleChange}>
@@ -46,7 +47,7 @@ class Book extends Component {
         <div className="book-title">{book.title}</div>
 
         <div className="book-authors">
-          {book.authors.map((author, index) => (
+          {book.authors && book.authors.map((author, index) => (
             <span key={author}>{author}{index !== book.authors.length - 1 && (<span>,</span>)} </span>
           ))}
         </div>

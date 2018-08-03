@@ -1,26 +1,56 @@
 import React, {Component} from 'react';
 import {Link} from "react-router-dom";
+import Book from "./Book";
+import {DebounceInput} from "react-debounce-input";
 
 class SearchBooks extends Component {
+  state = {
+    query: this.props.query
+  };
+
+  updateQuery = (query) => {
+    this.setState({query});
+    this.props.search(query);
+  };
+
   render() {
     return (
       <div className="search-books">
         <div className="search-books-bar">
           <Link to="/" className="close-search">Close</Link>
-          <div className="search-books-input-wrapper">
-            {/*
-              NOTES: The search from BooksAPI is limited to a particular set of search terms.
-              You can find these search terms here:
-              https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
 
-              However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-              you don't find a specific author or title. Every search is limited by search terms.
-            */}
-            <input type="text" placeholder="Search by title or author"/>
+          <div className="search-books-input-wrapper">
+            <DebounceInput
+              type="text"
+              placeholder="Search by title or author"
+              debounceTimeout={500}
+              value={this.state.query}
+              onChange={event => this.updateQuery(event.target.value)}
+            />
           </div>
+
+          <a onClick={() => this.updateQuery('')} className="clear-search">Clear</a>
         </div>
+
         <div className="search-books-results">
-          <ol className="books-grid"/>
+          <ol className="books-grid">
+            {this.props.searchResult && this.props.searchResult.length > 0 ? (
+              this.props.searchResult.map(book => (
+                <li key={book.id}>
+                  <Book
+                    book={book}
+                    changeShelf={this.props.changeShelf}
+                  />
+                </li>
+              ))
+            ) : (
+              this.props.searchResult.length === 0 && (
+                <div>
+                  <h1>No matching results found</h1>
+                </div>
+              )
+            )}
+          </ol>
         </div>
       </div>
     )

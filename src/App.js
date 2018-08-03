@@ -9,11 +9,25 @@ class BooksApp extends React.Component {
 
   state = {
     books: [],
+    query: '',
+    searchResult: []
   };
 
   componentDidMount() {
     this.getBooks();
   }
+
+  /**
+   * Sets array of book objects fetched from external API
+   * as books property in class state.
+   */
+  getBooks = () => {
+    BooksAPI.getAll()
+      .then(books => {
+        this.setState({books});
+      })
+      .catch(error => Error(error));
+  };
 
   /**
    * Updates API database and class state books property
@@ -33,15 +47,30 @@ class BooksApp extends React.Component {
   };
 
   /**
-   * Sets array of book objects fetched from external API
-   * as books property in class state.
+   * Returns list of search results for given query,
+   * synchronizes books in search result with books in user's bookcase
+   * @param query - search query provided from user
    */
-  getBooks = () => {
-    BooksAPI.getAll()
-      .then(books => {
-        this.setState({books});
+  search = (query) => {
+    BooksAPI.search(query)
+      .then(searchResult => {
+        if (query) this.setState({query});
+        else this.setState({query: ''});
+
+        if (searchResult && searchResult.length > 0) {
+          searchResult = searchResult.map(book => {
+            const predefinedBook = this.state.books.find(b => b.id === book.id);
+
+            if (predefinedBook) book.shelf = predefinedBook.shelf;
+            return book;
+          });
+
+          this.setState({searchResult})
+        } else this.setState({searchResult: []});
       })
-      .catch(error => Error(error));
+      .catch(error => {
+        Error(error);
+      })
   };
 
   render() {
@@ -54,7 +83,12 @@ class BooksApp extends React.Component {
           />
         )}/>
         <Route exact path="/search" render={() => (
-          <SearchBooks/>
+          <SearchBooks
+            search={this.search}
+            query={this.state.query}
+            searchResult={this.state.searchResult}
+            changeShelf={this.changeShelf}
+          />
         )}/>
       </div>
     )
