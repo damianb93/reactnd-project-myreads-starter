@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 class Book extends Component {
   options = [
-    { value: 'move', label: 'Move to...', disabled: true},
-    { value: 'currentlyReading', label: 'Currently Reading' },
-    { value: 'wantToRead', label: 'Want to Read' },
-    { value: 'read', label: 'Read' },
-    { value: 'none', label: 'None' }
+    {value: 'move', label: 'Move to...', disabled: true},
+    {value: 'currentlyReading', label: 'Currently Reading'},
+    {value: 'wantToRead', label: 'Want to Read'},
+    {value: 'read', label: 'Read'},
+    {value: 'none', label: 'None'}
   ];
 
   state = {
@@ -16,7 +16,7 @@ class Book extends Component {
   handleChange = (event) => {
     const selectedOptionValue = event.target.value;
 
-    this.setState({ selectedOptionValue });
+    this.setState({selectedOptionValue});
     this.props.changeShelf(this.props.book, selectedOptionValue);
   };
 
@@ -26,7 +26,9 @@ class Book extends Component {
     return (
       <div className="book">
         <div className="book-top">
-          <div className="book-cover" style={{width: 135, height: 200, backgroundImage: `url(${book.imageLinks.thumbnail})`}}/>
+          <div className="book-cover"
+               style={{width: 135, height: 200, backgroundImage: `url(${book.imageLinks.thumbnail})`}}/>
+
           <div className="book-shelf-changer">
             <select value={this.state.selectedOptionValue} onChange={this.handleChange}>
               {this.options.map(option => (
@@ -40,7 +42,9 @@ class Book extends Component {
             </select>
           </div>
         </div>
+
         <div className="book-title">{book.title}</div>
+
         <div className="book-authors">
           {book.authors.map((author, index) => (
             <span key={author}>{author}{index !== book.authors.length - 1 && (<span>,</span>)} </span>

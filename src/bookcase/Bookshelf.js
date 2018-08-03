@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Book from './Book';
 
 class Bookshelf extends Component {
   render() {
-    const { title, books } = this.props;
+    const {title, books} = this.props;
 
     return (
       <div className="bookshelf">
